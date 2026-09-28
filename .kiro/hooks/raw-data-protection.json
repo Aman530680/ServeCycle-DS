@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Raw Data Protection",
+      "trigger": "PostFileCreate",
+      "matcher": "data/raw/",
+      "action": {
+        "type": "agent",
+        "prompt": "data/raw/ is read-only by project rule (see .kiro/steering/tech.md: \"Never modify data/raw/dataset.csv. Cleaning writes to data/processed/\").\n\nA file in data/raw/ was just modified or created. Revert the change immediately. Do not write to data/raw/ under any circumstances. If cleaning or processing output needs to be saved, it must go to data/processed/ instead.\n\nReport what file was changed, what operation attempted to change it, and confirm that the change has been reverted."
+      }
+    }
+  ]
+}

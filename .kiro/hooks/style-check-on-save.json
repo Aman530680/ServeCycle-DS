@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Style Check on Save",
+      "trigger": "PostFileSave",
+      "matcher": "(src/.*\\.py|backend/.*\\.py|frontend/src/.*\\.(ts|tsx))$",
+      "action": {
+        "type": "agent",
+        "prompt": "Review the saved file against .kiro/steering/tech.md. Check for and fix any of the following violations — change nothing else:\n- Emojis in code, comments, strings, or log messages\n- Comments that describe what the code does rather than why\n- Placeholder or generic names (data2, temp, foo, thing, result1, etc.)\n- Unused imports\n- Dead code or commented-out code blocks\n- TODO stubs left in place\n- Banned marketing phrases: leverage, seamless, robust solution, cutting-edge, unlock, delve, empower, revolutionize, harness the power of, game-changer\n- Use of `any` type in TypeScript files\n- `except Exception: pass` or bare exception catches with no message in Python files\n\nReport each violation found with the line number and the fix applied. If no violations are found, say so in one line."
+      }
+    }
+  ]
+}

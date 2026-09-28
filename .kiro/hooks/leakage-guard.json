@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Leakage Guard",
+      "trigger": "PostFileSave",
+      "matcher": "src/features.*\\.py$",
+      "action": {
+        "type": "agent",
+        "prompt": "Inspect the saved features file against the data science rules in .kiro/steering/tech.md.\n\nThe model target is Wastage_Food_Amount. Quantity_of_Food (the preparation quantity) is excluded from model features because it is a preparation decision, not an input known before planning.\n\nCheck for and fix any of the following leakage violations:\n- Direct use of `Wastage_Food_Amount` as a feature (it is the target, not an input)\n- Direct use of `Quantity of Food` / `Quantity_of_Food` as a model feature\n- Any column derived from either of those two columns used as a feature\n- Any feature that encodes information only available after the event has occurred\n\nFor each violation found, report the line number, explain why it is leakage, and apply the fix. If no violations are found, confirm that in one line and state which features are present."
+      }
+    }
+  ]
+}
