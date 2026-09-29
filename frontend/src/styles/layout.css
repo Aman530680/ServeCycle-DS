@@ -1,0 +1,110 @@
+/* App shell layout */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-6) 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar__logo {
+  padding: 0 var(--space-6) var(--space-6);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.sidebar__nav {
+  list-style: none;
+}
+
+.sidebar__nav-item a {
+  display: block;
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  border-left: 3px solid transparent;
+  transition: color 0.1s, border-color 0.1s;
+}
+
+.sidebar__nav-item a:hover {
+  color: var(--color-text-primary);
+}
+
+.sidebar__nav-item a.active {
+  color: var(--color-accent);
+  border-left-color: var(--color-accent);
+  background: rgba(44, 110, 138, 0.06);
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-8);
+  max-width: 1200px;
+}
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-header h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.page-header p {
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .main-content {
+    padding: var(--space-4);
+  }
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
