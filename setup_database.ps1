@@ -1,70 +1,51 @@
-# Sets up the MySQL database for ServeCycle.
-# Run ONCE after creating the 'servecycle' database in MySQL.
-#
-# Usage: .\setup_database.ps1
-# You will be prompted for your MySQL password.
-
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 
-Write-Host "ServeCycle — MySQL setup" -ForegroundColor Cyan
-Write-Host ""
+Write-Host "ServeCycle - MySQL setup" -ForegroundColor Cyan
 
-# Ask for MySQL password
-$mysqlPassword = Read-Host "Enter your MySQL root password" -AsSecureString
-$plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($mysqlPassword)
-)
+$plainPassword = Read-Host "Enter your MySQL root password"
 
-# Write .env with the password
-$envContent = @"
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=servecycle
-DB_USER=root
-DB_PASSWORD=$plainPassword
-API_HOST=0.0.0.0
-API_PORT=8000
-CORS_ORIGINS=http://localhost:5173
-MODEL_PATH=models/random_forest.joblib
-MODEL_METADATA_PATH=models/model_metadata.json
-RANDOM_STATE=42
-DEFAULT_SERVICE_LEVEL=0.90
-CLEAN_CSV_PATH=data/processed/clean_events.csv
-"@
-$envContent | Out-File -FilePath ".env" -Encoding utf8
-Write-Host ".env created with your credentials." -ForegroundColor Green
+$line1  = "DB_HOST=localhost"
+$line2  = "DB_PORT=3306"
+$line3  = "DB_NAME=servecycle"
+$line4  = "DB_USER=root"
+$line5  = "DB_PASSWORD=" + $plainPassword
+$line6  = "API_HOST=0.0.0.0"
+$line7  = "API_PORT=8000"
+$line8  = "CORS_ORIGINS=http://localhost:5173"
+$line9  = "MODEL_PATH=models/random_forest.joblib"
+$line10 = "MODEL_METADATA_PATH=models/model_metadata.json"
+$line11 = "RANDOM_STATE=42"
+$line12 = "DEFAULT_SERVICE_LEVEL=0.90"
+$line13 = "CLEAN_CSV_PATH=data/processed/clean_events.csv"
 
-# Apply schema
-Write-Host ""
+$lines = @($line1,$line2,$line3,$line4,$line5,$line6,$line7,$line8,$line9,$line10,$line11,$line12,$line13)
+$lines | Out-File -FilePath ".env" -Encoding utf8
+Write-Host ".env created." -ForegroundColor Green
+
 Write-Host "Applying schema to MySQL..." -ForegroundColor Cyan
 $schemaPath = Join-Path $projectRoot "backend\db\schema.sql"
-& mysql -u root "-p$plainPassword" servecycle -e "source $schemaPath" 2>&1
+Get-Content $schemaPath | mysql -u root "-p$plainPassword" servecycle
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "Schema applied successfully." -ForegroundColor Green
+    Write-Host "Schema applied." -ForegroundColor Green
 } else {
-    Write-Host "Schema apply failed. Check your password and that MySQL is running." -ForegroundColor Red
+    Write-Host "Schema failed. Check password and that MySQL is running." -ForegroundColor Red
     exit 1
 }
 
-# Load data
-Write-Host ""
-Write-Host "Loading data into MySQL..." -ForegroundColor Cyan
+Write-Host "Loading data..." -ForegroundColor Cyan
 python -m src.loader
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "Data loaded successfully." -ForegroundColor Green
+    Write-Host "Data loaded." -ForegroundColor Green
 } else {
-    Write-Host "Data load failed. Check the error above." -ForegroundColor Red
+    Write-Host "Load failed." -ForegroundColor Red
     exit 1
 }
 
-# Verify
-Write-Host ""
-Write-Host "Verifying load..." -ForegroundColor Cyan
+Write-Host "Verifying..." -ForegroundColor Cyan
 python -m src.verify_load
 if ($LASTEXITCODE -eq 0) {
-    Write-Host ""
-    Write-Host "Database setup complete. You can now run the backend." -ForegroundColor Green
+    Write-Host "Database setup complete." -ForegroundColor Green
 } else {
-    Write-Host "Verification failed. Check the error above." -ForegroundColor Red
+    Write-Host "Verification failed." -ForegroundColor Red
 }
